@@ -23,13 +23,18 @@ app.whenReady().then(() => {
   const view = new WebContentsView();
   win.contentView.addChildView(view);
 
+  // Écoute de l'événement 'did-start-navigation' sur la vue WebContents
+  view.webContents.on('did-start-navigation', (event, url, isInPlace, isMainFrame) => {
+    win.webContents.send('update-address-bar', url);
+  });
+
   // Always fit the web rendering with the electron windows
   function fitViewToWin() {
     const winSize = win.webContents.getOwnerBrowserWindow().getBounds();
     view.setBounds({ x: 0, y: 55, width: winSize.width, height: winSize.height });
   }
 
-    win.webContents.openDevTools({ mode: 'detach' });
+  win.webContents.openDevTools({ mode: 'detach' });
 
   // Register events handling from the toolbar
   ipcMain.on('toogle-dev-tool', () => {
