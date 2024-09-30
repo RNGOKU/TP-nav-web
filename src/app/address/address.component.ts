@@ -22,7 +22,17 @@ export class AddressComponent {
       e.currentTarget.blur();
       this.browserService.setToCurrentUrl();
     } else if (e.key === 'Enter') {
-      const value = e.currentTarget.value;
+      let value = e.currentTarget.value;
+      value = e.currentTarget.value.trim(); // Trim whitespace
+      // Add http:// or https:// if not present
+      if (!value.startsWith('http://') && !value.startsWith('https://')) {
+        // Check if it might be a direct IP or a local file path
+        if (!value.includes('.') && !value.startsWith('/')) {
+          value = 'https://www.google.com/search?q=' + encodeURIComponent(value); 
+        } else {
+          value = 'http://' + value;
+        }
+      }
       e.currentTarget.blur();
       this.goToPage(value);
     }
