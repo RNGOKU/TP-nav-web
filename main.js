@@ -12,9 +12,9 @@ app.whenReady().then(() => {
     }
   });
 
-  if (app.isPackaged){
+  if (app.isPackaged) {
     win.loadFile('dist/browser-template/browser/index.html');
-  }else{
+  } else {
     win.loadURL('http://localhost:4200')
   }
 
@@ -65,7 +65,26 @@ app.whenReady().then(() => {
     view.webContents.reload();
   });
 
-  ipcMain.handle('go-to-page', (event, url) => {
+  ipcMain.handle('go-to-page', async (event, url) => {
+    let value = url.trim(); // Trim whitespace
+    // Add http:// or https:// if not present
+    if (!value.startsWith('http://') && !value.startsWith('https://')) {
+      // Check if it might be a direct IP or a local file path
+      if (!value.includes('.') && !value.startsWith('/')) {
+        value = 'https://www.google.com/search?q=' + encodeURIComponent(value);
+      } else {
+        const httpsUrl = 'https://www.' + value;
+        const response = await fetch(httpsUrl, { method: 'HEAD' }) // Use HEAD request to avoid downloading the whole page
+       
+        if (response.ok) {
+          // HTTPS exists!
+          url = httpsUrl;
+        } else {
+          // HTTPS failed, use http://
+          url = 'http://www.' + value;
+        }
+      }
+    }
     return view.webContents.loadURL(url);
   });
 
