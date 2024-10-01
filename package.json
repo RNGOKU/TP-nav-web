@@ -30,6 +30,7 @@
     "@angular/platform-browser": "^18.2.3",
     "@angular/platform-browser-dynamic": "^18.2.3",
     "@angular/router": "^18.2.3",
+    "@google-cloud/translate": "^8.5.0",
     "axios": "^1.7.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
