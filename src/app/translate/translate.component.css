@@ -1,32 +1,25 @@
 .language-buttons {
-    display: flex; /* Utilise le modèle flex pour aligner les boutons */
-    justify-content: center; /* Centre les boutons horizontalement */
-    gap: 15px; /* Espace entre les boutons */
-    margin: 20px 0; /* Marge supérieure et inférieure */
+    display: flex;
+    justify-content: center; 
+    gap: 15px; 
 }
 
 .language-buttons button {
-    background-color: #8d8d8d; /* Couleur de fond */
-    color: white; /* Couleur du texte */
-    padding: 10px 20px; /* Espace intérieur */
-    border: none; /* Pas de bordure */
-    border-radius: 5px; /* Coins arrondis */
-    font-size: 16px; /* Taille de la police */
-    cursor: pointer; /* Curseur en forme de main au survol */
-    transition: background-color 0.3s, transform 0.3s; /* Animation pour l'effet de survol */
-}
+    border: none; 
+    cursor: pointer; 
 
-.language-buttons button:hover {
-    background-color: #868686; /* Couleur de fond au survol */
-    transform: scale(1.05); /* Agrandit légèrement le bouton au survol */
 }
 
 .language-buttons button:focus {
-    outline: none; /* Enlève le contour au focus */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Ombre portée pour le focus */
+    outline: none; 
 }
+
 .language-buttons button.active {
-    background-color: #545454; /* Couleur de fond pour le bouton actif */
-    color: white; /* Couleur du texte pour le bouton actif */
-    border: 2px solid #5c5c5c; /* Bordure pour le bouton actif */
+    color: white;
+    border-bottom: 1px solid black;
+}
+
+.flag img{
+    width:30px;
+    height:20px;
 }
