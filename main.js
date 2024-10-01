@@ -2,11 +2,15 @@ const {
   app,
   WebContentsView,
   BrowserWindow,
-  ipcMain
+  ipcMain,
+  safeStorage
 } = require('electron');
 const path = require('node:path');
 const { log } = require('node:console');
 const { Translate } = require('@google-cloud/translate').v2;  // Import de l'API Google Cloud Translat
+const fs = require('fs');
+
+const storageFilePath = path.join(app.getPath('userData'), 'storage.json');
 
 
 const translate = new Translate({
@@ -175,6 +179,41 @@ ipcMain.on('inject-translated-content', (event, translatedHtmlStructure) => {
   `).catch(err => console.error('Erreur lors de l\'injection du contenu traduit :', err));
 });
 
+
+// Gestion du stockage d'un objet
+ipcMain.handle('stocker-objet', async (event, key, objet) => {
+  try {
+    // Lire le contenu actuel du fichier
+    let storage = {};
+    if (fs.existsSync(storageFilePath)) {
+      const data = fs.readFileSync(storageFilePath);
+      storage = JSON.parse(data);
+    }
+
+    // Mettre à jour la langue choisie
+    storage[key] = objet;
+    fs.writeFileSync(storageFilePath, JSON.stringify(storage));
+    console.log("Objet stocké avec succès !");
+  } catch (error) {
+    console.error("Erreur lors du stockage de l'objet :", error);
+    throw error;
+  }
+});
+
+// Gestion de la récupération d'un objet
+ipcMain.handle('recuperer-objet', async (event, key) => {
+  try {
+    if (fs.existsSync(storageFilePath)) {
+      const data = fs.readFileSync(storageFilePath);
+      const storage = JSON.parse(data);
+      return storage[key] || null; // Récupère la valeur ou null si pas trouvée
+    }
+    return null; // Fichier de stockage non trouvé
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'objet :", error);
+    throw error;
+  }
+});
 
 })
 

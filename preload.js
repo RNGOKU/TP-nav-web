@@ -11,6 +11,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   translateText: (text, targetLanguage) => ipcRenderer.invoke('translate-text', text, targetLanguage),
   getContent: () => ipcRenderer.invoke('get-page-content'),
+  stockerObjet: (key, objet) => ipcRenderer.invoke('stocker-objet', key, objet),
+  recupererObjet: (key) => ipcRenderer.invoke('recuperer-objet', key),
+
   canGoForward: () => ipcRenderer.invoke('can-go-forward'),
   canGoBack: () => ipcRenderer.invoke('can-go-back'),
   goToPage: (url) => ipcRenderer.invoke('go-to-page', url),
