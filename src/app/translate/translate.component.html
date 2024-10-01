@@ -1,12 +1,18 @@
-<!-- <button (click)="translatePage()">Traduire la page</button> -->
- 
+<div class="language-buttons">
+    <button (click)="translatePage('FR')" [class.active]="currentLanguage === 'FR'">FRANCAIS</button>
+    <button (click)="translatePage('EN')" [class.active]="currentLanguage === 'EN'">ANGLAIS</button>
+    <button (click)="translatePage('ES')" [class.active]="currentLanguage === 'ES'">ESPAGNOL</button>
+    <button (click)="translatePage('DE')" [class.active]="currentLanguage === 'DE'">ALLEMAND</button>
+</div>
 
+
+<!-- 
 <div class="dropdown">
     <button class="dropbtn">Langues</button>
     <div class="dropdown-content">
-        <li data-lang="fr">FR</li>
-        <li data-lang="en">EN</li>
-        <li data-lang="es">ES</li>
-        <li data-lang="de">DE</li>
+        <a href="#">Français</a>
+        <a href="#">Anglais</a>
+        <a href="#">Espagnol</a>
+        <a href="#">Allemand</a>
     </div>
-</div>
+</div> -->

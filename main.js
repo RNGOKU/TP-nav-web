@@ -35,11 +35,10 @@ const view = new WebContentsView();
 win.contentView.addChildView(view);
 
 // Écoute de l'événement 'did-start-navigation' sur la vue WebContents
-view.webContents.on('did-start-navigation', (event, url, isInPlace, isMainFrame) => {
-  if(isMainFrame){
-    win.webContents.send('update-address-bar', url);
-  }
-});
+  view.webContents.on('did-start-navigation', (event, url, isInPlace, isMainFrame) => {
+    if(isMainFrame){
+      win.webContents.send('update-address-bar', url);
+  }});
 
 // Always fit the web rendering with the electron windows
 function fitViewToWin() {
@@ -91,36 +90,9 @@ ipcMain.on('refresh', () => {
   view.webContents.reload();
 });
 
-  ipcMain.handle('can-go-forward', () => {
-    return view.webContents.navigationHistory.canGoForward();
-  });
-
-  ipcMain.on('refresh', () => {
-    view.webContents.reload();
-  });
-
-  ipcMain.handle('go-to-page', async (event, url) => {
-    let value = url.trim(); // Trim whitespace
-    // Add http:// or https:// if not present
-    if (!value.startsWith('http://') && !value.startsWith('https://')) {
-      // Check if it might be a direct IP or a local file path
-      if (!value.includes('.') && !value.startsWith('/')) {
-        value = 'https://www.google.com/search?q=' + encodeURIComponent(value);
-      } else {
-        const httpsUrl = 'https://www.' + value;
-        const response = await fetch(httpsUrl, { method: 'HEAD' }) // Use HEAD request to avoid downloading the whole page
-       
-        if (response.ok) {
-          // HTTPS exists!
-          url = httpsUrl;
-        } else {
-          // HTTPS failed, use http://
-          url = 'http://www.' + value;
-        }
-      }
-    }
-    return view.webContents.loadURL(url);
-  });
+ipcMain.handle('go-to-page', (event, url) => {
+  return view.webContents.loadURL(url);
+});
 
 
 ipcMain.handle('current-url', () => {
@@ -205,3 +177,4 @@ ipcMain.on('inject-translated-content', (event, translatedHtmlStructure) => {
 
 
 })
+

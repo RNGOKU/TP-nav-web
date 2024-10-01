@@ -1,45 +1,32 @@
-body {
-    font-family: Arial, sans-serif;
+.language-buttons {
+    display: flex; /* Utilise le modèle flex pour aligner les boutons */
+    justify-content: center; /* Centre les boutons horizontalement */
+    gap: 15px; /* Espace entre les boutons */
+    margin: 20px 0; /* Marge supérieure et inférieure */
 }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
+.language-buttons button {
+    background-color: #8d8d8d; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    padding: 10px 20px; /* Espace intérieur */
+    border: none; /* Pas de bordure */
+    border-radius: 5px; /* Coins arrondis */
+    font-size: 16px; /* Taille de la police */
+    cursor: pointer; /* Curseur en forme de main au survol */
+    transition: background-color 0.3s, transform 0.3s; /* Animation pour l'effet de survol */
 }
 
-.dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
+.language-buttons button:hover {
+    background-color: #868686; /* Couleur de fond au survol */
+    transform: scale(1.05); /* Agrandit légèrement le bouton au survol */
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+.language-buttons button:focus {
+    outline: none; /* Enlève le contour au focus */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Ombre portée pour le focus */
 }
-
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown-content a:hover {
-    background-color: #f1f1f1;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown:hover .dropbtn {
-    background-color: #3e8e41;
+.language-buttons button.active {
+    background-color: #545454; /* Couleur de fond pour le bouton actif */
+    color: white; /* Couleur du texte pour le bouton actif */
+    border: 2px solid #5c5c5c; /* Bordure pour le bouton actif */
 }

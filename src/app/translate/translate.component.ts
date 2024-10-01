@@ -17,15 +17,18 @@ interface HtmlNode {
 export class TranslateComponent {
 
   constructor() {}
+  currentLanguage: string = 'FR'; // Par exemple, le français est la langue par défaut
 
-  async translatePage() {
+  
+  async translatePage(language: string) {
     try {
       // Récupération de la structure HTML de la page
       const contentWithHtmlStructure = await (window as any).electronAPI.getContent();
       console.log('contentWithHtmlStructure', contentWithHtmlStructure);
-  
+      this.currentLanguage = language;
+
       const translatedHtmlStructure = await Promise.all(contentWithHtmlStructure.map(async (node: any) => {
-        const translatedInnerHTML = await (window as any).electronAPI.translateText(node.textContent, 'EN');
+        const translatedInnerHTML = await (window as any).electronAPI.translateText(node.textContent, language);
         return { ...node, textContent: translatedInnerHTML };
       }));
   
