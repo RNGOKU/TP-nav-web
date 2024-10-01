@@ -25,7 +25,9 @@ app.whenReady().then(() => {
 
   // Écoute de l'événement 'did-start-navigation' sur la vue WebContents
   view.webContents.on('did-start-navigation', (event, url, isInPlace, isMainFrame) => {
-    win.webContents.send('update-address-bar', url);
+    if(isMainFrame){
+      win.webContents.send('update-address-bar', url);
+    }
   });
 
   // Always fit the web rendering with the electron windows
