@@ -4,18 +4,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-check404',
   standalone: true,
   imports: [MatIconModule, MatButtonModule],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  templateUrl: './check404.component.html',
+  styleUrl: './check404.component.css',
 })
-export class HomeComponent {
+export class Check404Component {
   public browserService = inject(BrowserService);
 
-  goToHome() {
-    this.browserService.goToPage("https://amiens.unilasalle.fr");
-  }
+  constructor() {}
 
-  
+  async check404() {
+    const test = (window as any).electronAPI.check404();
+  }
 }

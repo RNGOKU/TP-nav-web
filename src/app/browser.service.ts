@@ -51,4 +51,6 @@ export class BrowserService {
     this.electronAPI.canGoForward()
       .then((canGoForward : boolean) => this.canGoForward = canGoForward);
   }
+
+  
 }
