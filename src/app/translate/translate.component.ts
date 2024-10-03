@@ -13,10 +13,11 @@ interface HtmlNode {
   styleUrl: './translate.component.css',
 })
 export class TranslateComponent {
-  currentLanguage: string= "FR"; // Pas d'initialisation ici
+  currentLanguage: string= "FR"; 
+  
 
   constructor() {
-    this.loadStoredLanguage(); // Appel pour charger la langue sauvegardée
+    this.loadStoredLanguage(); 
   }
 
   async translatePage(language: string) {
@@ -44,21 +45,18 @@ export class TranslateComponent {
     try {
       const storedLanguage = await (window as any).electronAPI.recupererObjet('selectedLanguage');
       if (storedLanguage) {
-        this.currentLanguage = storedLanguage;  // Mettre à jour la langue courante
+        this.currentLanguage = storedLanguage;  
         console.log('Langue récupérée :', storedLanguage);
-        // Lancer la traduction de la page avec la langue sauvegardée
         await this.translatePage(storedLanguage);
       } else {
-        // Si aucune langue n'est trouvée, définis une langue par défaut
         this.currentLanguage = 'FR'; // Définir le français comme langue par défaut
         console.log('Langue par défaut définie : FR');
-        await this.translatePage(this.currentLanguage); // Traduire avec la langue par défaut
+        await this.translatePage(this.currentLanguage); 
       }
     } catch (error) {
       console.error('Erreur lors de la récupération de la langue :', error);
-      // Définir une langue par défaut en cas d'erreur
-      this.currentLanguage = 'FR'; // Définir le français comme langue par défaut
-      await this.translatePage(this.currentLanguage); // Traduire avec la langue par défaut
+      this.currentLanguage = 'FR'; 
+      await this.translatePage(this.currentLanguage);
     }
   }
 }

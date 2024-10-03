@@ -131,6 +131,7 @@ win.on('resized', () => {
   fitViewToWin();
 });
 
+//recupère le contenue de la page en fonction des différent filtre
 ipcMain.handle('get-page-content', async () => {
   try {
 
@@ -176,7 +177,7 @@ ipcMain.handle('translate-text', async (event, text, targetLanguage) => {
 
 // Gestionnaire pour injecter le contenu traduit
 ipcMain.on('inject-translated-content', (event, translatedHtmlStructure) => {
-  const translatedHtmlString = JSON.stringify(translatedHtmlStructure);  // Sérialise le tableau en JSON
+  const translatedHtmlString = JSON.stringify(translatedHtmlStructure); 
   view.webContents.executeJavaScript(`
       (function() {
       const elements = Array.from(document.body.getElementsByTagName('*'));
@@ -201,14 +202,12 @@ ipcMain.on('inject-translated-content', (event, translatedHtmlStructure) => {
 // Gestion du stockage d'un objet
 ipcMain.handle('stocker-objet', async (event, key, objet) => {
   try {
-    // Lire le contenu actuel du fichier
     let storage = {};
     if (fs.existsSync(storageFilePath)) {
       const data = fs.readFileSync(storageFilePath);
       storage = JSON.parse(data);
     }
 
-    // Mettre à jour la langue choisie
     storage[key] = objet;
     fs.writeFileSync(storageFilePath, JSON.stringify(storage));
     console.log("Objet stocké avec succès !");
@@ -224,9 +223,9 @@ ipcMain.handle('recuperer-objet', async (event, key) => {
     if (fs.existsSync(storageFilePath)) {
       const data = fs.readFileSync(storageFilePath);
       const storage = JSON.parse(data);
-      return storage[key] || null; // Récupère la valeur ou null si pas trouvée
+      return storage[key] || null; 
     }
-    return null; // Fichier de stockage non trouvé
+    return null; 
   } catch (error) {
     console.error("Erreur lors de la récupération de l'objet :", error);
     throw error;
