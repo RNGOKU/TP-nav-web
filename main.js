@@ -1,4 +1,4 @@
-const { app, WebContentsView, BrowserWindow, ipcMain } = require('electron');
+const { app, WebContentsView, BrowserWindow, ipcMain , safeStorage} = require('electron');
 const path = require('node:path');
 
 app.whenReady().then(() => {
@@ -38,7 +38,7 @@ app.whenReady().then(() => {
 
   // Register events handling from the toolbar
   ipcMain.on('toogle-dev-tool', () => {
-    if (winContent.isDevToolsOpened()) {
+    if (win.webContents.isDevToolsOpened()) {
       win.webContents.closeDevTools();
     } else {
       win.webContents.openDevTools({ mode: 'detach' });
@@ -93,6 +93,78 @@ app.whenReady().then(() => {
     return view.webContents.getURL();
   });
 
+  ipcMain.handle('stocker-objet', async (event, key, objet) => {
+    try {
+      const objetEnString = JSON.stringify(objet);
+      await safeStorage.set(key, objetEnString);
+      console.log("Objet stocké avec succès !");
+    } catch (error) {
+      console.error("Erreur lors du stockage de l'objet :", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('recuperer-objet', async (event, key) => {
+    try {
+      const objetEnString = await safeStorage.get(key);
+      if (objetEnString) {
+        const objet = JSON.parse(objetEnString);
+        return objet;
+      } else {
+        return null; // ou une valeur par défaut si la clé n'existe pas
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'objet :", error);
+      throw error;
+    }
+  });
+
+  view.webContents.on('did-finish-load', () => {
+    view.webContents.executeJavaScript(`
+      //const champsEmail = document.querySelector('input[type*="email"]');
+      const champsMotDePasse = document.querySelector('[type*="password"]');
+      // Retourner true si les champs sont trouvés, sinon false
+      // !!champsEmail &&
+       !!champsMotDePasse;
+      `).then(champsTrouves => {
+        // Gérer le résultat dans le processus de rendu Electron
+        if (champsTrouves) {
+          // Envoyer l'événement 'champs-connexion-trouves'
+          win.webContents.send('champs-connexion-trouves'); 
+        } else {
+          // Envoyer l'événement 'champs-connexion-non-trouves'
+          win.webContents.send('champs-connexion-non-trouves'); 
+        }
+      });
+  });
+
+  ipcMain.handle('recuperer-identifiants-domaine', async () => {
+    try {
+      const domaineActuel = win.webContents.getURL().split('/')[2];
+      const identifiants = await safeStorage.get(domaineActuel);
+      return identifiants;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des identifiants :', error);
+      return [];
+    }
+  });
+
+  ipcMain.handle('remplirFormulaire', async (event, identifiant) =>{
+    win.webContents.document.querySelector('input[type*="email"]').value = identifiant.user;
+    win.webContents.document.querySelector('input[type*="password"]').value = identifiant.mdp;
+  });
+
+  ipcMain.handle('afficher-fenetre-passwords-manager', async (event) => {
+    const viewPasswordManager = new WebContentsView({
+      width: 300,
+      height: 300
+    });
+    win.contentView.addChildView(viewPasswordManager);
+    viewPasswordManager.webContents.loadFile('src/app/identifiants-popup-component/identifiants-popup-component.component.html');
+    const winSize = win.webContents.getOwnerBrowserWindow().getBounds();
+    viewPasswordManager.setBounds({ x: 0, y: 55, width: 300, height: 300 });
+  });
+
   //Register events handling from the main windows
   win.once('ready-to-show', () => {
     fitViewToWin();
@@ -103,3 +175,5 @@ app.whenReady().then(() => {
     fitViewToWin();
   });
 })
+
+

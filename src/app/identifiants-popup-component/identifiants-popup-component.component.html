@@ -1,0 +1,24 @@
+<div class="mdp">
+
+    <div mat-dialog-title>Choisir des identifiants</div>
+    <div mat-dialog-content>
+        @if(identifiants.length> 0){
+        <ul>
+            @for(identifiant of identifiants; track identifiant){
+                <li>
+                    <button (click)="choisirIdentifiant(identifiant)">
+                        {{ identifiant.email }}
+                    </button>
+                </li>
+            }
+        </ul>
+        }
+        @else {
+            <p>Aucun identifiant trouvé pour ce domaine.</p>
+        }
+    
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="fermer()">Fermer</button>
+    </div>
+</div>
