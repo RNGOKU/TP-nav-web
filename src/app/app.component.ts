@@ -8,11 +8,12 @@ import { RefreshComponent } from './refresh/refresh.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { HomeComponent } from "./home/home.component";
 import {Check404Component} from "./check404/check404.component";
+import { TranslateComponent } from "./translate/translate.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatToolbarModule, AddressComponent, BackwardComponent, DebugComponent, ForwardComponent, RefreshComponent, HomeComponent, Check404Component],
+  imports: [RouterOutlet, MatToolbarModule, AddressComponent, BackwardComponent, DebugComponent, ForwardComponent, RefreshComponent, HomeComponent, Check404Component, TranslateComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

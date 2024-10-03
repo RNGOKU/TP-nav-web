@@ -30,6 +30,8 @@
     "@angular/platform-browser": "^18.2.3",
     "@angular/platform-browser-dynamic": "^18.2.3",
     "@angular/router": "^18.2.3",
+    "@google-cloud/translate": "^8.5.0",
+    "axios": "^1.7.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
@@ -39,7 +41,7 @@
     "@angular/cli": "^18.2.3",
     "@angular/compiler-cli": "^18.2.3",
     "@types/jasmine": "~5.1.0",
-    "electron": "^32.0.2",
+    "electron": "^32.1.2",
     "electron-builder": "^25.0.5",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
