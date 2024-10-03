@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 interface HtmlNode {
   tagName: string;
@@ -12,12 +12,19 @@ interface HtmlNode {
   templateUrl: './translate.component.html',
   styleUrl: './translate.component.css',
 })
-export class TranslateComponent {
+export class TranslateComponent implements OnInit{
   currentLanguage: string= "FR"; 
   
 
   constructor() {
     this.loadStoredLanguage(); 
+  }
+
+  ngOnInit() {
+     (window as any).electronAPI.onStartTranslation(async () => {
+      const storedLanguage = await (window as any).electronAPI.recupererObjet('selectedLanguage');
+      this.translatePage(storedLanguage); 
+    });
   }
 
   async translatePage(language: string) {

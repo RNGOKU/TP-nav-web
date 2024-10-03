@@ -67,8 +67,9 @@ win.contentView.addChildView(view);
   }});
 
 
-  view.webContents.on("did-finish-load", () => {
+  view.webContents.on("did-finish-load", (event) => {
     funcCheck404();
+    win.webContents.send('start-translation'); 
   });
 
 // Always fit the web rendering with the electron windows
@@ -259,6 +260,24 @@ ipcMain.handle('recuperer-objet', async (event, key) => {
   }
 });
 
+ipcMain.handle('translate-page', async (event, language) => {
+  // Récupération de la structure HTML de la page
+  const contentWithHtmlStructure = await view.webContents.executeJavaScript(`(function() {
+    // Votre logique pour récupérer le contenu de la page ici
+  })();`);
+  
+  // Traduire le contenu
+  const translatedHtmlStructure = await Promise.all(contentWithHtmlStructure.map(async (node) => {
+    const translatedInnerHTML = await translate.translate(node.textContent, language);
+    return { ...node, textContent: translatedInnerHTML };
+  }));
+
+  // Injecter le contenu traduit dans la page
+  await view.webContents.executeJavaScript(`(function() {
+    // Votre logique pour injecter le contenu traduit ici
+  })();`);
+});
+
 
 ipcMain.on('check-404', (event) => {
 
@@ -302,8 +321,6 @@ async function funcCheck404 () {
 
       if(links404String != "") {
         alert("Liens 404 : " + links404String);
-      } else {
-        alert("Pas de lien 404 dans cette page !"); 
       }
     `)
   })
@@ -314,4 +331,3 @@ async function funcCheck404 () {
 
 
 })
-
