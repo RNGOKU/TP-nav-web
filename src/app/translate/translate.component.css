@@ -1,0 +1,25 @@
+.language-buttons {
+    display: flex;
+    justify-content: center; 
+    gap: 15px; 
+}
+
+.language-buttons button {
+    border: none; 
+    cursor: pointer; 
+
+}
+
+.language-buttons button:focus {
+    outline: none; 
+}
+
+.language-buttons button.active {
+    color: white;
+    border-bottom: 1px solid black;
+}
+
+.flag img{
+    width:30px;
+    height:20px;
+}
