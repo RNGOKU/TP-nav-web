@@ -183,7 +183,6 @@ view.webContents.on('did-finish-load', () => {
 ipcMain.handle('recuperer-identifiants-domaine', async () => {
   try {
     const domaineActuel = view.webContents.getURL().split('/')[2];
-    console.log("domaine :" + domaineActuel);
     const identifiants = await recupererObjet(domaineActuel);
     return identifiants;
   } catch (error) {
@@ -204,7 +203,6 @@ ipcMain.handle('enregistrer-identifiants', async (event, identifiant) =>{
 
 // Remplir les champs de connexions
 ipcMain.handle('remplirFormulaire', async (event, identifiant) =>{
-  console.log(identifiant);
   view.webContents.executeJavaScript(`document.querySelector('input[type*="email"]').value = '${identifiant.user}';
   `);
 
