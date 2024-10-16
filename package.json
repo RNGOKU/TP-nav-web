@@ -32,7 +32,6 @@
     "@angular/router": "^18.2.3",
     "@google-cloud/translate": "^8.5.0",
     "axios": "^1.7.7",
-    "electron-safe-storage": "^1.0.6",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
