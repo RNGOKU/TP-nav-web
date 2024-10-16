@@ -260,25 +260,6 @@ ipcMain.handle('recuperer-objet', async (event, key) => {
   }
 });
 
-ipcMain.handle('translate-page', async (event, language) => {
-  // Récupération de la structure HTML de la page
-  const contentWithHtmlStructure = await view.webContents.executeJavaScript(`(function() {
-    // Votre logique pour récupérer le contenu de la page ici
-  })();`);
-  
-  // Traduire le contenu
-  const translatedHtmlStructure = await Promise.all(contentWithHtmlStructure.map(async (node) => {
-    const translatedInnerHTML = await translate.translate(node.textContent, language);
-    return { ...node, textContent: translatedInnerHTML };
-  }));
-
-  // Injecter le contenu traduit dans la page
-  await view.webContents.executeJavaScript(`(function() {
-    // Votre logique pour injecter le contenu traduit ici
-  })();`);
-});
-
-
 ipcMain.on('check-404', (event) => {
 
   funcCheck404();
