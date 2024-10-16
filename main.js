@@ -2,8 +2,7 @@ const {
   app,
   WebContentsView,
   BrowserWindow,
-  ipcMain,
-  safeStorage
+  ipcMain
 } = require('electron');
 const path = require('node:path');
 const { log } = require('node:console');
@@ -60,6 +59,8 @@ if (app.isPackaged) {
 const view = new WebContentsView();
 win.contentView.addChildView(view);
 
+let viewPasswordManager = null;
+
 // Écoute de l'événement 'did-start-navigation' sur la vue WebContents
   view.webContents.on('did-start-navigation', (event, url, isInPlace, isMainFrame) => {
     if(isMainFrame){
@@ -91,16 +92,14 @@ view.webContents.openDevTools({
   mode: 'detach'
 });
 
-// Register events handling from the toolbar
-ipcMain.on('toogle-dev-tool', () => {
-  if (winContent.isDevToolsOpened()) {
-    win.webContents.closeDevTools();
-  } else {
-    win.webContents.openDevTools({
-      mode: 'detach'
-    });
-  }
-});
+  // Register events handling from the toolbar
+  ipcMain.on('toogle-dev-tool', () => {
+    if (winContent.isDevToolsOpened()) {
+      win.webContents.closeDevTools();
+    } else {
+      win.webContents.openDevTools({ mode: 'detach' });
+    }
+  });
 
 ipcMain.on('go-back', () => {
   view.webContents.navigationHistory.goBack();
@@ -147,6 +146,82 @@ ipcMain.handle('go-to-page', async (event, url) => {
 
 ipcMain.handle('current-url', () => {
   return view.webContents.getURL();
+});
+
+view.webContents.on('did-finish-load', () => {
+  view.webContents.executeJavaScript(`
+    const champsEmail = document.querySelector('input[type*="email"]');
+    const champsMotDePasse = document.querySelector('[type*="password"]');
+    // Retourner true si les champs sont trouvés, sinon false
+    !!champsEmail && !!champsMotDePasse || !!champsEmail || !!champsMotDePasse;
+    `).then(champsTrouves => {
+      // Si au moins un champs est trouvé
+      if (champsTrouves) {
+        // On déclenche l'ouverture d'une nouvelle page pour le gestionnaire de mot de passe si elle n'est pas déjà ouverte.
+        if(!viewPasswordManager){
+          viewPasswordManager = new BrowserWindow({
+            width: 300,
+            height: 300,
+            webPreferences: {
+              preload: path.join(__dirname, 'preload.js')
+            }
+          });
+          //Définition de la taille de la page.
+          viewPasswordManager.setBounds({ x: 0, y: 55, width: 720, height: 300 });
+          //Ouverture du debugger
+          viewPasswordManager.webContents.openDevTools({
+            mode: 'detach'
+          });
+          //chargement de la page du gestionnaire de mot de passe via la route. 
+          viewPasswordManager.webContents.loadURL('http://localhost:4200/password-manager'); 
+        }
+      }
+    });
+});
+
+// Récupère les identifiants selon le nom de domaine de la page charger
+ipcMain.handle('recuperer-identifiants-domaine', async () => {
+  try {
+    const domaineActuel = view.webContents.getURL().split('/')[2];
+    const identifiants = await recupererObjet(domaineActuel);
+    return identifiants;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des identifiants :', error);
+    return [];
+  }
+});
+
+// Enregistrer les identifiants
+ipcMain.handle('enregistrer-identifiants', async (event, identifiant) =>{
+  try {
+    const domaineActuel = view.webContents.getURL().split('/')[2];
+    await stockerObjet(domaineActuel, identifiant);
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistremetn des identifiants :', error);
+  }
+});
+
+// Remplir les champs de connexions
+ipcMain.handle('remplirFormulaire', async (event, identifiant) =>{
+  view.webContents.executeJavaScript(`document.querySelector('input[type*="email"]').value = '${identifiant.user}';
+  `);
+
+  view.webContents.executeJavaScript(`
+  document.querySelector('input[type*="password"]').value = '${identifiant.mdp}';
+  `);
+});
+
+// Fermer la fenêtre
+ipcMain.handle('fermer-fenetre-password-manager', async (event) => {
+  if (viewPasswordManager && !viewPasswordManager.isDestroyed()) {
+    viewPasswordManager.close();
+    viewPasswordManager = null; // Réinitialiser la référence
+  }
+});
+
+// recharger la page du gestionnaire de mot de passe
+ipcMain.on('refresh-password-manager-page', () => {
+  viewPasswordManager.webContents.reload();
 });
 
 //Register events handling from the main windows
@@ -229,35 +304,18 @@ ipcMain.on('inject-translated-content', (event, translatedHtmlStructure) => {
 
 // Gestion du stockage d'un objet
 ipcMain.handle('stocker-objet', async (event, key, objet) => {
-  try {
-    let storage = {};
-    if (fs.existsSync(storageFilePath)) {
-      const data = fs.readFileSync(storageFilePath);
-      storage = JSON.parse(data);
-    }
-
-    storage[key] = objet;
-    fs.writeFileSync(storageFilePath, JSON.stringify(storage));
-    console.log("Objet stocké avec succès !");
-  } catch (error) {
-    console.error("Erreur lors du stockage de l'objet :", error);
-    throw error;
-  }
+  stockerObjet(key, objet);
 });
 
 // Gestion de la récupération d'un objet
 ipcMain.handle('recuperer-objet', async (event, key) => {
-  try {
-    if (fs.existsSync(storageFilePath)) {
-      const data = fs.readFileSync(storageFilePath);
-      const storage = JSON.parse(data);
-      return storage[key] || null; 
-    }
-    return null; 
-  } catch (error) {
-    console.error("Erreur lors de la récupération de l'objet :", error);
-    throw error;
-  }
+  return recupererObjet(key);
+});
+
+// Gestion de la récupération d'un objet
+ipcMain.handle('supprimer-objet', async (event) => {
+  const domaineActuel = win.webContents.getURL().split('/')[2];
+  supprimerObjet(domaineActuel);
 });
 
 ipcMain.handle('translate-page', async (event, language) => {
@@ -278,6 +336,62 @@ ipcMain.handle('translate-page', async (event, language) => {
   })();`);
 });
 
+
+function stockerObjet(key, objet) {
+  try {
+    let storage = {};
+    if (fs.existsSync(storageFilePath)) {
+      const data = fs.readFileSync(storageFilePath);
+      storage = JSON.parse(data);
+    }
+
+    storage[key] = objet;
+    fs.writeFileSync(storageFilePath, JSON.stringify(storage));
+    console.log("Objet stocké avec succès !");
+  } catch (error) {
+    console.error("Erreur lors du stockage de l'objet :", error);
+    throw error;
+  }
+}
+
+function recupererObjet(key) {
+  try {
+    if (fs.existsSync(storageFilePath)) {
+      const data = fs.readFileSync(storageFilePath);
+      const storage = JSON.parse(data);
+      return storage[key] || null; 
+    }
+    return null; 
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'objet :", error);
+    throw error;
+  }
+}
+
+function supprimerObjet(key) {
+  try {
+    if (fs.existsSync(storageFilePath)) {
+      const data = fs.readFileSync(storageFilePath);
+      const storage = JSON.parse(data);
+
+      if (key in storage) { 
+        delete storage[key]; 
+        fs.writeFileSync(storageFilePath, JSON.stringify(storage));
+        console.log(`Objet avec la clé '${key}' supprimé avec succès !`);
+        return true; // Succès de la suppression
+      } else {
+        console.log(`Aucun objet trouvé avec la clé '${key}'.`);
+        return false; // Objet non trouvé
+      }
+    } else {
+      console.log("Le fichier de stockage n'existe pas.");
+      return false; // Fichier non trouvé
+    }
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'objet :", error);
+    throw error;
+  }
+}
 
 ipcMain.on('check-404', (event) => {
 
@@ -328,6 +442,5 @@ async function funcCheck404 () {
     console.error("Erreur lors de l'exécution du script :", error);
   });
 }
-
 
 })
