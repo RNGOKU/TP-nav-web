@@ -35,7 +35,7 @@ const functionGetAllLinks = `
 `;
 
 const translate = new Translate({
-  key: 'AIzaSyDAnZeF6oK-sYaDSG4xGbezrp-n8bcDTk4', // Remplace par ta clé API Google
+  key: 'AIzaSyBnBXIWeC0ghbXMVdA1D3gapr4vFPrIJSc', // Remplace par ta clé API Google
 });
 app.whenReady().then(() => {
 
