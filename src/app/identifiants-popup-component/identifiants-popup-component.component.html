@@ -1,13 +1,13 @@
 <div class="mdp">
 
-    <div mat-dialog-title>Choisir des identifiants</div>
-    <div mat-dialog-content>
-        @if(identifiants.length> 0){
+    <div>Choisir des identifiants</div>
+    <div>
+        @if(listeIdentifiants){
         <ul>
-            @for(identifiant of identifiants; track identifiant){
+            @for(identifiant of listeIdentifiants; track identifiant){
                 <li>
-                    <button (click)="choisirIdentifiant(identifiant)">
-                        {{ identifiant.email }}
+                    <button (click)="passwordManagerService.remplirFromulaire(identifiant)">
+                        {{ identifiant.user }}
                     </button>
                 </li>
             }
@@ -18,7 +18,20 @@
         }
     
     </div>
-    <div mat-dialog-actions>
-        <button mat-button (click)="fermer()">Fermer</button>
+
+    <button (click)="passwordManagerService.supprIdentifiantsDeLaPage()">Supprimer les identifiants liés au domaine</button>
+
+    <div>
+        <input [(ngModel)]="nouvelIdentifiant.user" type="text" placeholder="Nom d'utilisateur" >
+        <input type="password" placeholder="Mot de passe" [(ngModel)]="nouvelIdentifiant.mdp">
+        <button (click)="passwordManagerService.saveIdentifiants([nouvelIdentifiant])">Enregistrer</button>
+    </div>
+
+    <div>
+        <button (click)="passwordManagerService.saveIdentifiants([identifiantTest])" >Enregistrer identifiantTest</button>
+    </div>
+
+    <div>
+        <button (click)="passwordManagerService.fermer()" >Fermer</button>
     </div>
 </div>
