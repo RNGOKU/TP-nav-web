@@ -23,8 +23,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   canGoBack: () => ipcRenderer.invoke('can-go-back'),
   goToPage: (url) => ipcRenderer.invoke('go-to-page', url),
   currentUrl: () => ipcRenderer.invoke('current-url'),
-  stockerObjet: (objet) => ipcRenderer.invoke('stocker-objet',key, objet),
-  recupererObjet: (key) => ipcRenderer.invoke('recuperer-objet', key),
   supprimerObjet: () => ipcRenderer.invoke('supprimer-objet'),
   recupererIdentifiantsSelonDomaine: () => ipcRenderer.invoke('recuperer-identifiants-domaine'),
   enregistrerIdentifiants: (identifiants) => ipcRenderer.invoke('enregistrer-identifiants', identifiants),
